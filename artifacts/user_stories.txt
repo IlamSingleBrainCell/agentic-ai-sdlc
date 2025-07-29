@@ -1,0 +1,9 @@
+📘 User Stories
+========================================
+
+1. As an Administrator, I want to onboard new Agents so that the SDLC can be efficiently managed.
+2. As an Agent, I want to receive new tasks from the system so that I can start working on them.
+3. As an Agent, I want to update the status of a task so that the project manager has visibility into progress.
+4. As a Project Manager, I want to review and approve Agent-completed tasks so that quality control is maintained.
+5. As a stakeholder, I want to track the progress of tasks through the SDLC so that I can stay informed.
+6. As an Agent, I want to receive notifications about task updates and approvals so that I can stay informed and responsive.

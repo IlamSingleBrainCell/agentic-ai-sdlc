@@ -1,0 +1,46 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	User_Requirements(User Requirements)
+	Auto-generate_User_Stories(Auto-generate User Stories)
+	Human_User_Story_Approval(Human User Story Approval<hr/><small><em>__interrupt = before</em></small>)
+	Create_Design_Document(Create Design Document)
+	Human_Design_Document_Review(Human Design Document Review<hr/><small><em>__interrupt = before</em></small>)
+	Generate_Code(Generate Code)
+	Human_Code_Review(Human Code Review<hr/><small><em>__interrupt = before</em></small>)
+	Security_Review(Security Review)
+	Human_Security_Review(Human Security Review<hr/><small><em>__interrupt = before</em></small>)
+	Write_Test_Cases(Write Test Cases)
+	Human_Test_Cases_Review(Human Test Cases Review<hr/><small><em>__interrupt = before</em></small>)
+	QA_Testing(QA Testing)
+	Human_QA_Review(Human QA Review<hr/><small><em>__interrupt = before</em></small>)
+	Deployment(Deployment)
+	__end__([<p>__end__</p>]):::last
+	Auto-generate_User_Stories --> Human_User_Story_Approval;
+	Create_Design_Document --> Human_Design_Document_Review;
+	Deployment --> __end__;
+	Generate_Code --> Human_Code_Review;
+	QA_Testing --> Human_QA_Review;
+	Security_Review --> Human_Security_Review;
+	User_Requirements --> Auto-generate_User_Stories;
+	Write_Test_Cases --> Human_Test_Cases_Review;
+	__start__ --> User_Requirements;
+	Human_User_Story_Approval -. &nbsp;Approve&nbsp; .-> Create_Design_Document;
+	Human_User_Story_Approval -. &nbsp;Denied&nbsp; .-> Auto-generate_User_Stories;
+	Human_Design_Document_Review -. &nbsp;Approve&nbsp; .-> Generate_Code;
+	Human_Design_Document_Review -. &nbsp;Denied&nbsp; .-> Create_Design_Document;
+	Human_Code_Review -. &nbsp;Approve&nbsp; .-> Security_Review;
+	Human_Code_Review -. &nbsp;Denied&nbsp; .-> Generate_Code;
+	Human_Security_Review -. &nbsp;Approve&nbsp; .-> Write_Test_Cases;
+	Human_Security_Review -. &nbsp;Denied&nbsp; .-> Generate_Code;
+	Human_Test_Cases_Review -. &nbsp;Approve&nbsp; .-> QA_Testing;
+	Human_Test_Cases_Review -. &nbsp;Denied&nbsp; .-> Write_Test_Cases;
+	Human_QA_Review -. &nbsp;Approve&nbsp; .-> Deployment;
+	Human_QA_Review -. &nbsp;Denied&nbsp; .-> Generate_Code;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
