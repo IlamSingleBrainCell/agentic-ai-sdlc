@@ -21,7 +21,7 @@ from docx import Document
 
 # Defining llm
 from langchain_groq import ChatGroq
-llm = ChatGroq(model="gemma2-9b-it")
+llm = ChatGroq(model="deepseek-r1-distill-llama-70b")
 
 
 # Data modeling
