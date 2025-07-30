@@ -1,25 +1,19 @@
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
-from .models import Flight
-from .services import search_flights
+from flask import Flask, request, jsonify
 
-@api_view(['GET'])
-def search_flights_view(request):
-    """
-    Endpoint to search for flights based on user input.
+app = Flask(__name__)
 
-    Args:
-        request (HttpRequest): The incoming HTTP request.
+# Placeholder for routes
+@app.route('/users', methods=['POST'])
+def create_user():
+    # Implement user creation logic
+    return jsonify({'message': 'User created successfully'})
 
-    Returns:
-        JsonResponse: A JSON response containing the flight results.
-    """
-    origin = request.query_params.get('origin')
-    destination = request.query_params.get('destination')
-    date = request.query_params.get('date')
+@app.route('/products', methods=['GET'])
+def get_products():
+    # Implement product retrieval logic
+    return jsonify({'products': []})  
 
-    if not all([origin, destination, date]):
-        return JsonResponse({'error': 'Missing required parameters'}, status=400)
+# Add more routes for cart, checkout, admin functionalities
 
-    flights = search_flights(origin, destination, date)
-    return JsonResponse({'flights': flights})
+if __name__ == '__main__':
+    app.run(debug=True)

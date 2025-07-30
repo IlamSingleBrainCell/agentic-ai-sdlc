@@ -1,15 +1,23 @@
-from django.db import models
+class User:
+    """Represents a user in the system."""
+    def __init__(self, user_id, username, email, password):
+        self.user_id = user_id
+        self.username = username
+        self.email = email
+        self.password = password
 
-class Flight(models.Model):
-    """
-    Model representing a flight.
-    """
-    origin = models.CharField(max_length=50)
-    destination = models.CharField(max_length=50)
-    date = models.DateField()
-    airline = models.CharField(max_length=50)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    stops = models.IntegerField()
+class Product:
+    """Represents a product in the catalog."""
+    def __init__(self, product_id, name, description, price, quantity):
+        self.product_id = product_id
+        self.name = name
+        self.description = description
+        self.price = price
+        self.quantity = quantity
 
-    def __str__(self):
-        return f"{self.origin} to {self.destination} on {self.date}"
+class Order:
+    """Represents a customer order."""
+    def __init__(self, order_id, user_id, items):
+        self.order_id = order_id
+        self.user_id = user_id
+        self.items = items

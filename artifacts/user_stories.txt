@@ -1,9 +1,9 @@
 📘 User Stories
 ========================================
 
-1. As a customer, I want to search for flights by destination, departure date, and number of passengers so that I can find the best options for my travel needs.
-2. As a customer, I want to compare flight prices from different airlines so that I can choose the most affordable option.
-3. As a customer, I want to select and book a flight, including specifying seat preferences and travel insurance so that I can secure my reservation.
-4. As a customer, I want to receive confirmation and itinerary details via email so that I have a record of my booking.
-5. As an admin, I want to manage flight schedules and inventory so that I can ensure accurate pricing and availability.
-6. As an admin, I want to generate reports on booking trends and customer demographics so that I can make informed business decisions.
+1. As a new user, I want to create an account so that I can shop and save my information.
+2. As a registered user, I want to browse the product catalog so that I can find items I'm interested in.
+3. As a user, I want to add items to my shopping cart so that I can purchase multiple products in one transaction.
+4. As a user, I want to securely checkout and complete my purchase so that I can receive my order.
+5. As an administrator, I want to manage product information and inventory so that I can ensure accurate product listings.
+6. As an administrator, I want to track and manage orders so that I can fulfill customer requests and monitor sales.

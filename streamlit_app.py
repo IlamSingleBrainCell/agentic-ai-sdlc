@@ -502,6 +502,9 @@ with tabs[0]:
         default_requirements = state.get("requirements", "")
         if "template_to_use" in st.session_state:
             default_requirements = st.session_state.template_to_use
+            # Update the state with the template content
+            state['requirements'] = st.session_state.template_to_use
+            st.session_state.state = state
             # Clear the template after using it
             del st.session_state.template_to_use
         
@@ -513,19 +516,27 @@ with tabs[0]:
             key="requirements_input"
         )
         
+        # Update state with current requirements value
+        state['requirements'] = requirements
+        st.session_state.state = state
+        
         # Word count and validation
         word_count = len(requirements.split()) if requirements else 0
         st.caption(f"📊 Word count: {word_count} | Recommended: 50-500 words")
         
         if st.button("🚀 Start Workflow", type="primary", use_container_width=True):
+            # Get the current requirements from the widget
+            current_requirements = st.session_state.requirements_input
+            word_count = len(current_requirements.split()) if current_requirements else 0
+            
             if word_count < 10:
                 st.error("❌ Please provide more detailed requirements (at least 10 words)")
             else:
                 # Start timer
                 st.session_state.start_time = datetime.now()
                 
-                # Update state with new requirements
-                state['requirements'] = requirements
+                # Update state with current requirements
+                state['requirements'] = current_requirements
                 st.session_state.state = state
                 
                 # Progress animation
