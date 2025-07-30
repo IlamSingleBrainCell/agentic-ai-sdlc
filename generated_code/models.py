@@ -1,21 +1,15 @@
-class Agent:
-    """Represents an Agent in the system."""
-    def __init__(self, agent_id, name, email):
-        self.agent_id = agent_id
-        self.name = name
-        self.email = email
+from django.db import models
 
-    def __repr__(self):
-        return f"Agent(agent_id={self.agent_id}, name={self.name}, email={self.email})"
+class Flight(models.Model):
+    """
+    Model representing a flight.
+    """
+    origin = models.CharField(max_length=50)
+    destination = models.CharField(max_length=50)
+    date = models.DateField()
+    airline = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stops = models.IntegerField()
 
-class Task:
-    """Represents a Task in the system."""
-    def __init__(self, task_id, title, description, status='pending', assigned_agent_id=None):
-        self.task_id = task_id
-        self.title = title
-        self.description = description
-        self.status = status
-        self.assigned_agent_id = assigned_agent_id
-
-    def __repr__(self):
-        return f"Task(task_id={self.task_id}, title={self.title}, status={self.status})"
+    def __str__(self):
+        return f"{self.origin} to {self.destination} on {self.date}"

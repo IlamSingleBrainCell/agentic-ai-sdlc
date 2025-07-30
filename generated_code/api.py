@@ -1,39 +1,25 @@
-from flask import Flask, request, jsonify
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from .models import Flight
+from .services import search_flights
 
-app = Flask(__name__)
+@api_view(['GET'])
+def search_flights_view(request):
+    """
+    Endpoint to search for flights based on user input.
 
-# Example placeholder - replace with your actual data models and services
-def create_agent(agent_data):
-    # Logic to create a new agent in the system
-    pass
+    Args:
+        request (HttpRequest): The incoming HTTP request.
 
-def assign_task(task_id, agent_id):
-    # Logic to assign a task to an agent
-    pass
+    Returns:
+        JsonResponse: A JSON response containing the flight results.
+    """
+    origin = request.query_params.get('origin')
+    destination = request.query_params.get('destination')
+    date = request.query_params.get('date')
 
-def update_task_status(task_id, status):
-    # Logic to update the status of a task
-    pass
+    if not all([origin, destination, date]):
+        return JsonResponse({'error': 'Missing required parameters'}, status=400)
 
-def approve_task(task_id):
-    # Logic to approve a completed task
-    pass
-
-@app.route('/onboard_agent', methods=['POST'])
-def onboard_agent():
-    agent_data = request.get_json()
-    create_agent(agent_data)
-    return jsonify({'message': 'Agent onboarded successfully'}), 201
-
-@app.route('/assign_task', methods=['POST'])
-def assign_task():
-    data = request.get_json()
-    task_id = data['task_id']
-    agent_id = data['agent_id']
-    assign_task(task_id, agent_id)
-    return jsonify({'message': 'Task assigned successfully'}), 200
-
-# Add more API routes for other functionalities
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    flights = search_flights(origin, destination, date)
+    return JsonResponse({'flights': flights})

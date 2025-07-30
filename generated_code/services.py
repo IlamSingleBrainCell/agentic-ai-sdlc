@@ -1,23 +1,21 @@
-from models import Agent, Task
+from .models import Flight
 
-def create_agent(agent_data):
-    """Creates a new Agent in the system."""
-    # Implement logic to create a new Agent object
-    # and persist it to the database
-    pass
+def search_flights(origin, destination, date):
+    """
+    Searches for flights based on given criteria.
 
-def assign_task(task_id, agent_id):
-    """Assigns a task to an Agent."""
-    # Implement logic to update the task object
-    # and associate it with the given agent
-    pass
+    Args:
+        origin (str): The origin airport code.
+        destination (str): The destination airport code.
+        date (str): The travel date in YYYY-MM-DD format.
 
-def update_task_status(task_id, status):
-    """Updates the status of a task."""
-    # Implement logic to update the task object's status
-    pass
+    Returns:
+        list: A list of Flight objects matching the criteria.
+    """
+    # Implement flight search logic using the Flight model
+    # This could involve querying the database, fetching data from
+    # an external API, or other data retrieval methods.
 
-def approve_task(task_id):
-    """Approves a completed task."""
-    # Implement logic to mark the task as approved
-    pass
+    # Example: Retrieve all flights matching the criteria
+    flights = Flight.objects.filter(origin=origin, destination=destination, date=date) 
+    return list(flights)
