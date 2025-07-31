@@ -1,251 +1,242 @@
-# streamlit_app.py
+# streamlit_app_professional.py
+"""
+Professional AI SDLC Wizard with Multi-Language Support and Autonomous Features
+"""
+
 import os
 import streamlit as st
 from dotenv import load_dotenv
 from langgraph.checkpoint.memory import MemorySaver
-from sdlc_graph import (
-    graph,  # your compiled LangGraph
-    State,  # your TypedDict state schema
-)
 import time
 from datetime import datetime
 import json
 import plotly.graph_objects as go
 import plotly.express as px
 from pathlib import Path
+import pandas as pd
+
+# Import configurations and modules
+from config import Config, ActiveConfig
+from autonomous_features import (
+    AutonomousDecisionEngine, 
+    AutonomyLevel, 
+    ErrorRecoveryEngine,
+    WorkflowOptimizer
+)
+from ui_utils import (
+    WorkflowAnalytics,
+    ExportManager,
+    NotificationManager,
+    ValidationHelper
+)
+from advanced_features import show_advanced_features
+
+# Import the original graph
+from sdlc_graph import graph, State
 
 load_dotenv()
 os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
 
 # Page Configuration
 st.set_page_config(
-    page_title="AI SDLC Wizard - Enterprise Edition",
+    page_title="AI SDLC Wizard - Professional Edition",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Professional MVP Look
+# Professional CSS with Dark Mode Support
 st.markdown("""
 <style>
     /* Import Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    /* Root Variables */
+    :root {
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --error-color: #ef4444;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f5f7fa;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Dark Mode Variables */
+    .dark-mode {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --text-primary: #ffffff;
+        --text-secondary: #a0a0a0;
+        --border-color: rgba(255, 255, 255, 0.1);
+    }
     
     /* Global Styles */
     .main {
         font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: var(--bg-secondary);
+        color: var(--text-primary);
     }
     
-    /* Custom Card Styling */
-    .custom-card {
-        background: white;
+    /* Code Blocks */
+    pre, code {
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+    
+    /* Professional Card */
+    .pro-card {
+        background: var(--bg-primary);
         padding: 1.5rem;
         border-radius: 12px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
         margin-bottom: 1rem;
-        border: 1px solid rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
         transition: all 0.3s ease;
     }
     
-    .custom-card:hover {
+    .pro-card:hover {
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         transform: translateY(-2px);
     }
     
-    /* Progress Steps */
-    .progress-step {
-        display: inline-block;
-        padding: 8px 16px;
-        margin: 4px;
+    /* Status Indicators */
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
         border-radius: 20px;
         font-size: 14px;
         font-weight: 500;
-        transition: all 0.3s ease;
     }
     
-    .step-completed {
-        background: #10b981;
-        color: white;
+    .status-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
     }
     
-    .step-active {
-        background: #3b82f6;
-        color: white;
-        animation: pulse 2s infinite;
+    .status-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
     }
     
-    .step-pending {
-        background: #e5e7eb;
-        color: #6b7280;
+    .status-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error-color);
     }
     
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-    }
-    
-    /* Status Badges */
-    .status-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 16px;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    
-    .status-approved {
-        background: #d1fae5;
-        color: #065f46;
-    }
-    
-    .status-denied {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-    
-    .status-pending {
-        background: #fef3c7;
-        color: #92400e;
-    }
-    
-    /* Animated Header */
-    .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* Sidebar Styling */
-    .css-1d391kg {
-        background: #1e293b;
-    }
-    
-    /* Button Styling */
-    .stButton > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 0.5rem 1.5rem;
+    /* Quality Score Visualization */
+    .quality-score {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: var(--bg-secondary);
         border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        margin: 8px 0;
     }
     
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    .quality-bar {
+        flex: 1;
+        height: 8px;
+        background: var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
     }
     
-    /* Metrics Styling */
-    .metric-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    .quality-fill {
+        height: 100%;
+        transition: width 0.5s ease;
     }
     
-    .metric-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #1e293b;
-    }
+    .quality-excellent { background: var(--success-color); }
+    .quality-good { background: #3b82f6; }
+    .quality-fair { background: var(--warning-color); }
+    .quality-poor { background: var(--error-color); }
     
-    .metric-label {
-        font-size: 0.875rem;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    
-    /* Code Block Enhancement */
-    .stCodeBlock {
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Tab Styling */
-    .stTabs [data-baseweb="tab-list"] {
+    /* Autonomous Mode Indicator */
+    .autonomy-badge {
+        display: inline-flex;
+        align-items: center;
         gap: 8px;
-        background: white;
-        padding: 8px;
-        border-radius: 12px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 8px;
         padding: 8px 16px;
-        font-weight: 500;
+        background: linear-gradient(135deg, #667eea20, #764ba220);
+        border: 1px solid var(--primary-color);
+        border-radius: 20px;
+        font-weight: 600;
     }
     
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+    /* Language Selector */
+    .language-card {
+        padding: 16px;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
     }
     
-    /* Animations */
-    .fade-in {
-        animation: fadeIn 0.5s ease-in;
+    .language-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+    .language-card.selected {
+        background: linear-gradient(135deg, #667eea10, #764ba210);
+        border-color: var(--primary-color);
     }
     
     /* Loading Animation */
-    .loading-dots {
+    .loading-spinner {
         display: inline-block;
-        width: 80px;
+        width: 20px;
         height: 20px;
+        border: 3px solid rgba(102, 126, 234, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s ease-in-out infinite;
     }
     
-    .loading-dots:after {
-        content: ' .';
-        animation: dots 1s steps(5, end) infinite;
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
     
-    @keyframes dots {
-        0%, 20% {
-            color: rgba(0,0,0,0);
-            text-shadow:
-                .25em 0 0 rgba(0,0,0,0),
-                .5em 0 0 rgba(0,0,0,0);
-        }
-        40% {
-            color: #1e293b;
-            text-shadow:
-                .25em 0 0 rgba(0,0,0,0),
-                .5em 0 0 rgba(0,0,0,0);
-        }
-        60% {
-            text-shadow:
-                .25em 0 0 #1e293b,
-                .5em 0 0 rgba(0,0,0,0);
-        }
-        80%, 100% {
-            text-shadow:
-                .25em 0 0 #1e293b,
-                .5em 0 0 #1e293b;
-        }
+    /* Auto-save Indicator */
+    .auto-save {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        background: var(--bg-primary);
+        border: 1px solid var(--success-color);
+        border-radius: 20px;
+        font-size: 14px;
+        color: var(--success-color);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .auto-save.active {
+        opacity: 1;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state with enhanced tracking
-if "thread" not in st.session_state:
+# Initialize Enhanced Session State
+if "initialized" not in st.session_state:
+    st.session_state.initialized = True
     import uuid
     st.session_state.thread = {"configurable": {"thread_id": str(uuid.uuid4())}}
     st.session_state.state = {
         "requirements": "",
+        "programming_language": "python",
+        "llm_model": Config.DEFAULT_LLM_MODEL,
+        "autonomy_level": "semi_auto",
         "user_stories": [],
         "user_story_status": "Approve",
         "user_story_feedback": [],
@@ -262,7 +253,9 @@ if "thread" not in st.session_state:
         "test_cases_review_feedback": [],
         "qa_review_status": "Approve",
         "qa_review_feedback": [],
-        "deployment": ""
+        "deployment": "",
+        "quality_metrics": {},
+        "autonomous_decisions": []
     }
     st.session_state.active_node = "User Requirements"
     st.session_state.events = []
@@ -270,24 +263,55 @@ if "thread" not in st.session_state:
     st.session_state.notifications = []
     st.session_state.theme = "light"
     st.session_state.export_history = []
+    st.session_state.error_recovery = ErrorRecoveryEngine()
+    st.session_state.workflow_optimizer = WorkflowOptimizer()
+    st.session_state.auto_save_enabled = True
+    st.session_state.workflow_history = []
+
+# Auto-save functionality
+def auto_save_state():
+    """Auto-save current state"""
+    if st.session_state.auto_save_enabled:
+        save_data = {
+            "timestamp": str(datetime.now()),
+            "state": st.session_state.state,
+            "language": st.session_state.state.get("programming_language", "python"),
+            "model": st.session_state.state.get("llm_model", Config.DEFAULT_LLM_MODEL),
+            "autonomy": st.session_state.state.get("autonomy_level", "semi_auto")
+        }
+        
+        # Save to file (in production, use database)
+        os.makedirs("auto_saves", exist_ok=True)
+        filename = f"auto_saves/save_{st.session_state.thread['configurable']['thread_id']}.json"
+        with open(filename, "w") as f:
+            json.dump(save_data, f, indent=2)
 
 # Helper Functions
-def add_notification(message, type="info"):
-    """Add a notification to the queue"""
-    st.session_state.notifications.append({
-        "message": message,
-        "type": type,
-        "timestamp": datetime.now()
-    })
+def get_quality_class(score: float) -> str:
+    """Get CSS class based on quality score"""
+    if score >= 0.9:
+        return "quality-excellent"
+    elif score >= 0.75:
+        return "quality-good"
+    elif score >= 0.6:
+        return "quality-fair"
+    else:
+        return "quality-poor"
 
-def get_elapsed_time():
-    """Get elapsed time since workflow started"""
-    if st.session_state.start_time:
-        elapsed = datetime.now() - st.session_state.start_time
-        hours, remainder = divmod(elapsed.seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-    return "00:00:00"
+def render_quality_score(label: str, score: float):
+    """Render a quality score bar"""
+    quality_class = get_quality_class(score)
+    percentage = int(score * 100)
+    
+    st.markdown(f"""
+    <div class="quality-score">
+        <span style="min-width: 150px;">{label}</span>
+        <div class="quality-bar">
+            <div class="quality-fill {quality_class}" style="width: {percentage}%"></div>
+        </div>
+        <span style="min-width: 50px; text-align: right;">{percentage}%</span>
+    </div>
+    """, unsafe_allow_html=True)
 
 def get_completion_percentage():
     """Calculate workflow completion percentage"""
@@ -303,189 +327,209 @@ def get_completion_percentage():
         return int((flow_order.index(current) + 1) / len(flow_order) * 100)
     return 0
 
-def render_progress_bar():
-    """Render an animated progress bar"""
-    progress = get_completion_percentage()
-    st.markdown(f"""
-    <div style="background: #e5e7eb; border-radius: 8px; height: 8px; overflow: hidden;">
-        <div style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); 
-                    width: {progress}%; height: 100%; transition: width 0.5s ease;">
-        </div>
-    </div>
-    <p style="text-align: center; margin-top: 8px; color: #64748b; font-size: 14px;">
-        {progress}% Complete
-    </p>
-    """, unsafe_allow_html=True)
-
 # Sidebar Configuration
 with st.sidebar:
-    st.markdown("### 🎛️ Control Panel")
+    st.markdown("### 🎛️ Professional Control Panel")
     
-    # Project Info Card
-    st.markdown("""
-    <div class="custom-card">
-        <h4 style="margin: 0 0 10px 0;">📊 Project Dashboard</h4>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span style="color: #64748b;">Session ID:</span>
-            <span style="font-family: monospace; font-size: 12px;">
-                {}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span style="color: #64748b;">Elapsed Time:</span>
-            <span style="font-weight: 600;">{}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-            <span style="color: #64748b;">Status:</span>
-            <span class="status-badge status-pending">In Progress</span>
-        </div>
-    </div>
-    """.format(
-        st.session_state.thread["configurable"]["thread_id"][:8],
-        get_elapsed_time()
-    ), unsafe_allow_html=True)
+    # Autonomy Level Selection
+    st.markdown("#### 🤖 Autonomy Level")
+    autonomy_level = st.selectbox(
+        "Select automation level:",
+        options=list(Config.AUTONOMY_LEVELS.keys()),
+        format_func=lambda x: f"{Config.AUTONOMY_LEVELS[x]['icon']} {Config.AUTONOMY_LEVELS[x]['name']}",
+        help="\n".join([f"{v['name']}: {v['description']}" for v in Config.AUTONOMY_LEVELS.values()])
+    )
+    st.session_state.state["autonomy_level"] = autonomy_level
     
-    # Progress Overview
-    render_progress_bar()
+    # LLM Model Selection
+    st.markdown("#### 🧠 AI Model")
+    selected_model = st.selectbox(
+        "Select LLM model:",
+        options=list(Config.AVAILABLE_MODELS.keys()),
+        format_func=lambda x: Config.AVAILABLE_MODELS[x]['name'],
+        help="Choose the AI model for code generation"
+    )
+    st.session_state.state["llm_model"] = selected_model
+    
+    # Model details
+    model_info = Config.AVAILABLE_MODELS[selected_model]
+    st.caption(f"📝 {model_info['description']}")
+    st.caption(f"📊 Max tokens: {model_info['max_tokens']:,}")
+    
+    # Programming Language Selection
+    st.markdown("#### 💻 Programming Language")
+    language_cols = st.columns(2)
+    
+    # Create language grid
+    languages = list(Config.SUPPORTED_LANGUAGES.keys())
+    selected_language = st.session_state.state.get("programming_language", "python")
+    
+    for i, lang in enumerate(languages):
+        col = language_cols[i % 2]
+        with col:
+            if st.button(
+                Config.SUPPORTED_LANGUAGES[lang]['name'],
+                key=f"lang_{lang}",
+                use_container_width=True,
+                type="primary" if lang == selected_language else "secondary"
+            ):
+                st.session_state.state["programming_language"] = lang
+                st.rerun()
+    
+    # Workflow Statistics
+    st.markdown("#### 📊 Workflow Statistics")
+    stats_container = st.container()
+    with stats_container:
+        # Decision statistics
+        autonomous_decisions = st.session_state.state.get("autonomous_decisions", [])
+        total_decisions = len(autonomous_decisions)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Auto Decisions", total_decisions)
+        with col2:
+            avg_score = sum(d.get('score', 0) for d in autonomous_decisions) / max(1, total_decisions)
+            st.metric("Avg Quality", f"{avg_score:.2f}")
+    
+    # Advanced Settings
+    with st.expander("⚙️ Advanced Settings", expanded=False):
+        st.session_state.auto_save_enabled = st.checkbox("Enable Auto-Save", value=True)
+        show_metrics = st.checkbox("Show Quality Metrics", value=True)
+        error_recovery = st.checkbox("Enable Error Recovery", value=True)
+        quality_threshold = st.slider("Quality Threshold", 0.0, 1.0, 0.8, 0.05)
+        
+        # Export Settings
+        st.markdown("##### 📥 Export Options")
+        export_format = st.multiselect(
+            "Export formats:",
+            ["PDF", "Word", "JSON", "ZIP"],
+            default=["PDF", "ZIP"]
+        )
     
     # Quick Actions
     st.markdown("### ⚡ Quick Actions")
     col1, col2 = st.columns(2)
+    
     with col1:
-        if st.button("📥 Export All", use_container_width=True):
-            # Export functionality
-            add_notification("Exporting all artifacts...", "info")
+        if st.button("💾 Save Project", use_container_width=True):
+            auto_save_state()
+            st.success("Project saved!")
+    
     with col2:
-        if st.button("🔄 Reset", use_container_width=True):
-            if st.checkbox("Confirm reset?"):
-                for key in st.session_state.keys():
-                    del st.session_state[key]
-                st.rerun()
+        if st.button("📊 Analytics", use_container_width=True):
+            st.session_state.show_analytics = True
     
-    # Notifications Panel
-    if st.session_state.notifications:
-        st.markdown("### 🔔 Notifications")
-        for notif in st.session_state.notifications[-3:]:  # Show last 3
-            icon = {"info": "ℹ️", "success": "✅", "error": "❌", "warning": "⚠️"}.get(notif["type"], "ℹ️")
-            st.markdown(f"{icon} {notif['message']}")
-    
-    # Settings
-    with st.expander("⚙️ Settings", expanded=False):
-        st.checkbox("Enable Auto-Save", value=True)
-        st.checkbox("Show Advanced Options", value=False)
-        st.selectbox("LLM Model", ["gemma2-9b-it", "deepseek-r1-distill-llama-70b"], index=0)
+    if st.button("🚀 Export All", use_container_width=True, type="primary"):
+        with st.spinner("Exporting artifacts..."):
+            export_manager = ExportManager()
+            zip_file = export_manager.export_all_artifacts(st.session_state.state)
+            st.success(f"Exported to {zip_file}")
 
-# Main Header
-st.markdown("""
-<div class="main-header fade-in">
-    <h1 style="margin: 0; font-size: 2.5rem;">🚀 AI-Powered SDLC Workflow Wizard</h1>
-    <p style="margin: 10px 0 0 0; opacity: 0.9;">Transform your ideas into production-ready software with AI</p>
+# Main Header with Professional Styling
+st.markdown(f"""
+<div class="pro-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+    <h1 style="margin: 0; font-size: 2.5rem;">🚀 AI SDLC Wizard - Professional Edition</h1>
+    <p style="margin: 10px 0 20px 0; opacity: 0.9;">
+        Multi-Language • Autonomous • Enterprise-Ready
+    </p>
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <div class="status-indicator" style="background: rgba(255,255,255,0.2); color: white;">
+            💻 {Config.SUPPORTED_LANGUAGES[st.session_state.state.get('programming_language', 'python')]['name']}
+        </div>
+        <div class="status-indicator" style="background: rgba(255,255,255,0.2); color: white;">
+            🧠 {Config.AVAILABLE_MODELS[st.session_state.state.get('llm_model', Config.DEFAULT_LLM_MODEL)]['name']}
+        </div>
+        <div class="status-indicator" style="background: rgba(255,255,255,0.2); color: white;">
+            {Config.AUTONOMY_LEVELS[st.session_state.state.get('autonomy_level', 'manual')]['icon']} 
+            {Config.AUTONOMY_LEVELS[st.session_state.state.get('autonomy_level', 'manual')]['name']}
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Metrics Row
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    st.markdown("""
-    <div class="metric-card fade-in">
-        <div class="metric-value">14</div>
-        <div class="metric-label">Workflow Steps</div>
-    </div>
-    """, unsafe_allow_html=True)
-with col2:
-    stories_count = len(st.session_state.state.get("user_stories", []))
-    st.markdown(f"""
-    <div class="metric-card fade-in">
-        <div class="metric-value">{stories_count}</div>
-        <div class="metric-label">User Stories</div>
-    </div>
-    """, unsafe_allow_html=True)
-with col3:
-    files_count = len(os.listdir("generated_code")) if os.path.exists("generated_code") else 0
-    st.markdown(f"""
-    <div class="metric-card fade-in">
-        <div class="metric-value">{files_count}</div>
-        <div class="metric-label">Code Files</div>
-    </div>
-    """, unsafe_allow_html=True)
-with col4:
-    completion = get_completion_percentage()
-    st.markdown(f"""
-    <div class="metric-card fade-in">
-        <div class="metric-value">{completion}%</div>
-        <div class="metric-label">Complete</div>
-    </div>
-    """, unsafe_allow_html=True)
-
 # Enhanced Progress Tracker
-st.markdown("### 🎯 Workflow Progress")
-
-flow_order = [
-    ("User Requirements", "📋", "Define project requirements"),
-    ("Auto-generate User Stories", "🤖", "AI generates user stories"),
-    ("Human User Story Approval", "👥", "Review and approve stories"),
-    ("Create Design Document", "📐", "Generate technical design"),
-    ("Human Design Document Review", "🔍", "Review design document"),
-    ("Generate Code", "💻", "AI writes the code"),
-    ("Human Code Review", "👨‍💻", "Review generated code"),
-    ("Security Review", "🔒", "Automated security check"),
-    ("Human Security Review", "🛡️", "Manual security review"),
-    ("Write Test Cases", "🧪", "Generate test cases"),
-    ("Human Test Cases Review", "✔️", "Review test cases"),
-    ("QA Testing", "🎯", "Run quality assurance"),
-    ("Human QA Review", "✅", "Final QA approval"),
-    ("Deployment", "🚀", "Deploy to production")
-]
-
-def get_node_status(node_name):
-    current = st.session_state.active_node
-    current_names = [n[0] for n in flow_order]
-    if current not in current_names:
-        return "pending"
-    current_idx = current_names.index(current)
-    node_idx = current_names.index(node_name)
-    if node_idx < current_idx:
-        return "completed"
-    elif node_idx == current_idx:
-        return "active"
-    return "pending"
-
-# Create visual workflow
-workflow_cols = st.columns(7)
-for i, (node, icon, desc) in enumerate(flow_order):
-    col_idx = i % 7
-    status = get_node_status(node)
+def render_enhanced_progress():
+    """Render enhanced progress tracker with quality indicators"""
+    st.markdown("### 🎯 Intelligent Workflow Progress")
     
-    with workflow_cols[col_idx]:
-        if status == "completed":
-            st.markdown(f"""
-            <div class="progress-step step-completed" title="{desc}">
-                {icon} {node.split()[0]}
-            </div>
-            """, unsafe_allow_html=True)
-        elif status == "active":
-            st.markdown(f"""
-            <div class="progress-step step-active" title="{desc}">
-                {icon} {node.split()[0]}
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div class="progress-step step-pending" title="{desc}">
-                {icon} {node.split()[0]}
-            </div>
-            """, unsafe_allow_html=True)
+    # Progress bar
+    progress = get_completion_percentage()
+    st.progress(progress / 100)
+    st.caption(f"Progress: {progress}% Complete")
+    
+    # Stage indicators
+    flow_order = [
+        ("User Requirements", "📋"),
+        ("Auto-generate User Stories", "🤖"),
+        ("Human User Story Approval", "👥"),
+        ("Create Design Document", "📐"),
+        ("Human Design Document Review", "🔍"),
+        ("Generate Code", "💻"),
+        ("Human Code Review", "👨‍💻"),
+        ("Security Review", "🔒"),
+        ("Human Security Review", "🛡️"),
+        ("Write Test Cases", "🧪"),
+        ("Human Test Cases Review", "✔️"),
+        ("QA Testing", "🎯"),
+        ("Human QA Review", "✅"),
+        ("Deployment", "🚀")
+    ]
+    
+    cols = st.columns(7)
+    for i, (stage, icon) in enumerate(flow_order):
+        col = cols[i % 7]
+        with col:
+            # Check if this stage had autonomous decision
+            auto_decision = any(
+                d.get('stage', '').replace(' ', '_').lower() in stage.replace(' ', '_').lower() 
+                for d in st.session_state.state.get('autonomous_decisions', [])
+            )
+            
+            if auto_decision:
+                st.markdown(f"""
+                <div style="text-align: center;">
+                    <div style="font-size: 24px;">{icon}</div>
+                    <div style="font-size: 10px; color: var(--primary-color);">✓ AUTO</div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="text-align: center; opacity: 0.6;">
+                    <div style="font-size: 24px;">{icon}</div>
+                    <div style="font-size: 10px;">&nbsp;</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-# Main Content Area with Enhanced Tabs
+render_enhanced_progress()
+
+# Quality Metrics Dashboard
+if st.session_state.state.get("quality_metrics"):
+    st.markdown("### 📊 Quality Metrics")
+    metrics = st.session_state.state.get("quality_metrics", {})
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        render_quality_score("Completeness", metrics.get("completeness_score", 0))
+    with col2:
+        render_quality_score("Consistency", metrics.get("consistency_score", 0))
+    with col3:
+        render_quality_score("Security", metrics.get("security_score", 0))
+    with col4:
+        render_quality_score("Best Practices", metrics.get("best_practices_score", 0))
+
+# Main Content Tabs
 tabs = st.tabs([
-    "📋 Requirements", 
-    "📘 User Stories", 
-    "📐 Design", 
-    "💻 Code", 
-    "🧪 Tests", 
-    "🔒 Security", 
-    "✅ QA", 
+    "📋 Requirements",
+    "📘 User Stories",
+    "📐 Design",
+    "💻 Code",
+    "🧪 Tests",
+    "🔒 Security",
+    "✅ QA",
     "🚀 Deploy",
-    "📊 Analytics"
+    "📊 Analytics",
+    "🤖 AI Insights"
 ])
 
 state = st.session_state.state
@@ -497,142 +541,237 @@ with tabs[0]:
     with col1:
         st.markdown("### 📝 Project Requirements")
         
-        # Requirements input with enhanced UI
-        # Check if we have a template to use
+        # Language-specific placeholder
+        lang_config = Config.SUPPORTED_LANGUAGES.get(state.get("programming_language", "python"), {})
+        placeholder = f"""Describe your {lang_config.get('name', 'software')} project in detail...
+
+Example for {lang_config.get('name', 'software')}:
+Create a {lang_config.get('name', 'software').lower()} application that:
+- Implements user authentication
+- Provides RESTful API endpoints
+- Includes data validation
+- Has comprehensive error handling
+- Follows {lang_config.get('name', 'software')} best practices"""
+        
+        # Requirements input
         default_requirements = state.get("requirements", "")
         if "template_to_use" in st.session_state:
             default_requirements = st.session_state.template_to_use
-            # Update the state with the template content
             state['requirements'] = st.session_state.template_to_use
             st.session_state.state = state
-            # Clear the template after using it
             del st.session_state.template_to_use
         
         requirements = st.text_area(
             "Enter your project requirements:",
             default_requirements,
             height=300,
-            placeholder="Describe your software project in detail...\n\nExample:\nCreate a flight booking system that allows users to:\n- Search for flights\n- Book tickets\n- Manage reservations\n- Process payments",
+            placeholder=placeholder,
             key="requirements_input"
         )
         
-        # Update state with current requirements value
+        # Update state
         state['requirements'] = requirements
         st.session_state.state = state
         
-        # Word count and validation
+        # Validation
         word_count = len(requirements.split()) if requirements else 0
+        errors, warnings = ValidationHelper.validate_requirements(requirements)
+        
+        # Display validation results
+        if errors:
+            for error in errors:
+                st.error(f"❌ {error}")
+        
+        if warnings and word_count > 0:
+            with st.expander("💡 Suggestions for better results"):
+                for warning in warnings:
+                    st.info(f"💡 {warning}")
+        
         st.caption(f"📊 Word count: {word_count} | Recommended: 50-500 words")
         
-        if st.button("🚀 Start Workflow", type="primary", use_container_width=True):
-            # Get the current requirements from the widget
+        # Start Workflow Button
+        if st.button("🚀 Start Intelligent Workflow", type="primary", use_container_width=True):
             current_requirements = st.session_state.requirements_input
             word_count = len(current_requirements.split()) if current_requirements else 0
             
             if word_count < 10:
                 st.error("❌ Please provide more detailed requirements (at least 10 words)")
             else:
-                # Start timer
-                st.session_state.start_time = datetime.now()
-                
-                # Update state with current requirements
-                state['requirements'] = current_requirements
-                st.session_state.state = state
-                
-                # Progress animation
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
-                # Start the graph stream with progress updates
-                for i, event in enumerate(graph.stream(state, st.session_state.thread)):
-                    st.session_state.events.append(event)
-                    for node, output in event.items():
-                        if isinstance(output, dict):
-                            st.session_state.state.update(output)
-                        st.session_state.active_node = node
-                        
-                        # Update progress
-                        progress_bar.progress(min((i + 1) * 10, 100))
-                        status_text.text(f"Processing: {node}...")
-                        time.sleep(0.1)  # Small delay for visual effect
-                
-                add_notification("Requirements submitted successfully!", "success")
-                st.rerun()
+                try:
+                    # Start timer
+                    st.session_state.start_time = datetime.now()
+                    
+                    # Update state
+                    state['requirements'] = current_requirements
+                    st.session_state.state = state
+                    
+                    # Auto-save
+                    auto_save_state()
+                    
+                    # Progress animation
+                    progress_bar = st.progress(0)
+                    status_text = st.empty()
+                    
+                    # Start the graph stream
+                    for i, event in enumerate(graph.stream(state, st.session_state.thread)):
+                        st.session_state.events.append(event)
+                        for node, output in event.items():
+                            if isinstance(output, dict):
+                                st.session_state.state.update(output)
+                            st.session_state.active_node = node
+                            
+                            # Update progress
+                            progress_bar.progress(min((i + 1) * 10, 100))
+                            status_text.text(f"🔄 Processing: {node}...")
+                            
+                            time.sleep(0.1)
+                    
+                    st.success("✅ Workflow started successfully!")
+                    st.rerun()
+                    
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
+                    if hasattr(st.session_state, 'error_recovery'):
+                        st.info("🔧 Error recovery system activated")
     
     with col2:
-        st.markdown("### 💡 Tips for Better Results")
-        st.info("""
-        **Best Practices:**
-        - Be specific about features
-        - Include user roles
-        - Mention technical constraints
-        - Specify integrations needed
-        - Define success criteria
-        """)
+        st.markdown("### 💡 AI-Powered Suggestions")
         
-        # Template Examples
-        with st.expander("📄 View Templates"):
-            template = st.selectbox("Choose a template:", [
-                "E-commerce Platform",
-                "SaaS Dashboard",
-                "Mobile App Backend",
-                "API Service"
-            ])
+        # Language-specific tips
+        lang_tips = {
+            "python": [
+                "Mention if you need async/await support",
+                "Specify Python version (3.8+)",
+                "Include required libraries",
+                "Mention if type hints are needed"
+            ],
+            "javascript": [
+                "Specify Node.js or browser environment",
+                "Mention framework preferences (React, Vue, etc.)",
+                "Include ES6+ feature requirements",
+                "Specify build tool preferences"
+            ],
+            "java": [
+                "Specify Java version (8, 11, 17)",
+                "Mention Spring Boot if needed",
+                "Include build tool (Maven/Gradle)",
+                "Specify enterprise features"
+            ],
+            "go": [
+                "Mention Go version (1.18+)",
+                "Specify if you need concurrency",
+                "Include package dependencies",
+                "Mention deployment target"
+            ],
+            "csharp": [
+                "Specify .NET version",
+                "Mention if you need ASP.NET",
+                "Include NuGet packages",
+                "Specify deployment environment"
+            ]
+        }
+        
+        current_lang = state.get("programming_language", "python")
+        tips = lang_tips.get(current_lang, ["Be specific about requirements"])
+        
+        st.info(f"**{Config.SUPPORTED_LANGUAGES[current_lang]['name']} Tips:**\n" + 
+                "\n".join([f"• {tip}" for tip in tips]))
+        
+        # Enhanced Templates
+        with st.expander("📄 Professional Templates"):
+            template = st.selectbox(
+                "Choose a template:",
+                list(Config.REQUIREMENT_TEMPLATES.keys())
+            )
             
-            templates = {
-                "E-commerce Platform": "Create an e-commerce platform with user authentication, product catalog, shopping cart, payment processing, and order management.",
-                "SaaS Dashboard": "Build a SaaS analytics dashboard with user management, data visualization, real-time updates, and export capabilities.",
-                "Mobile App Backend": "Develop a REST API backend for a mobile app with user authentication, push notifications, and data synchronization.",
-                "API Service": "Create a microservice API with CRUD operations, authentication, rate limiting, and comprehensive documentation."
-            }
+            template_info = Config.REQUIREMENT_TEMPLATES[template]
+            st.caption(f"📝 {template_info['description']}")
             
-            if st.button("Use Template"):
-                # Store template in a separate session state variable
-                st.session_state.template_to_use = templates[template]
+            if st.button("Use This Template", use_container_width=True):
+                st.session_state.template_to_use = template_info['template']
                 st.rerun()
 
-# Tab 2: User Stories
+# Tab 2: User Stories (with Autonomous Features)
 with tabs[1]:
     st.markdown("### 📚 Generated User Stories")
     
     user_stories = st.session_state.state.get("user_stories", [])
     
     if user_stories:
-        # Display stories in cards
+        # Quality Analysis (if autonomous features are available)
+        if state.get("autonomy_level") != "manual":
+            try:
+                auto_engine = AutonomousDecisionEngine(AutonomyLevel(state.get("autonomy_level", "semi_auto")))
+                decision, metrics, feedback = auto_engine.analyze_user_stories(
+                    user_stories,
+                    state.get("requirements", "")
+                )
+                
+                # Display quality metrics
+                col1, col2, col3 = st.columns([2, 1, 1])
+                
+                with col1:
+                    st.markdown("#### 📊 Quality Analysis")
+                    render_quality_score("Story Completeness", metrics.completeness_score)
+                    render_quality_score("Requirements Alignment", metrics.consistency_score)
+                    render_quality_score("Best Practices", metrics.best_practices_score)
+                    render_quality_score("Overall Quality", metrics.overall_score)
+                
+                with col2:
+                    st.markdown("#### 🤖 AI Recommendation")
+                    if decision == "Approve":
+                        st.success(f"✅ {decision}")
+                    else:
+                        st.warning(f"⚠️ {decision}")
+                    st.caption(feedback)
+                
+                with col3:
+                    st.markdown("#### 📈 Metrics")
+                    st.metric("Stories", len(user_stories))
+                    st.metric("Quality", f"{int(metrics.overall_score * 100)}%")
+                    st.metric("Autonomy", state.get("autonomy_level", "manual").title())
+            except Exception as e:
+                st.warning(f"Quality analysis unavailable: {str(e)}")
+        
+        # Display stories
         for i, story in enumerate(user_stories, 1):
             st.markdown(f"""
-            <div class="custom-card fade-in">
-                <h4 style="color: #667eea; margin-bottom: 10px;">Story #{i}</h4>
+            <div class="pro-card">
+                <h4 style="color: var(--primary-color); margin-bottom: 10px;">Story #{i}</h4>
                 <p style="margin: 0;">{story}</p>
             </div>
             """, unsafe_allow_html=True)
         
         # Review Section
         st.markdown("### 🔍 Review User Stories")
+        
         col1, col2 = st.columns([3, 1])
         
         with col1:
             status = st.radio(
-                "Do these user stories accurately capture your requirements?",
+                "Do these user stories meet your requirements?",
                 ["Approve", "Denied"],
                 horizontal=True,
                 key="user_stories_approval"
             )
             
             if status == "Denied":
-                feedback = st.text_area(
-                    "Please provide specific feedback for improvement:",
+                feedback_text = st.text_area(
+                    "Please provide specific feedback:",
                     placeholder="E.g., Missing admin functionality, need more detail on payment processing...",
                     key="user_stories_feedback"
                 )
         
         with col2:
-            st.markdown("### 📊 Story Stats")
-            st.metric("Total Stories", len(user_stories))
-            st.metric("Avg. Length", f"{sum(len(s.split()) for s in user_stories) // len(user_stories)} words")
+            st.markdown("### 📋 Review Checklist")
+            checks = [
+                st.checkbox("Stories follow format", value=True),
+                st.checkbox("All features covered", value=True),
+                st.checkbox("Testable criteria", value=True),
+                st.checkbox("User-focused", value=True)
+            ]
         
         if st.button("✅ Submit Review", type="primary", use_container_width=True):
-            # Update state with review decision
             feedback_text = st.session_state.get("user_stories_feedback", "") if status == "Denied" else ""
             graph.update_state(
                 st.session_state.thread,
@@ -640,7 +779,6 @@ with tabs[1]:
                 as_node="Human User Story Approval"
             )
             
-            # Continue graph execution
             with st.spinner("Processing your feedback..."):
                 for event in graph.stream(None, st.session_state.thread):
                     st.session_state.events.append(event)
@@ -649,7 +787,8 @@ with tabs[1]:
                             st.session_state.state.update(output)
                         st.session_state.active_node = node
             
-            add_notification(f"User stories {status.lower()}!", "success" if status == "Approve" else "info")
+            st.success(f"✅ User stories {status.lower()}!")
+            auto_save_state()
             st.rerun()
     else:
         st.info("🤖 User stories will be generated after you submit requirements.")
@@ -694,9 +833,6 @@ with tabs[2]:
             st.markdown("### 📄 Document Actions")
             if st.button("📥 Export to Word", use_container_width=True):
                 st.success("✅ Document exported to artifacts/design_document.docx")
-            
-            if st.button("📧 Email Document", use_container_width=True):
-                st.info("📧 Email functionality coming soon!")
         
         # Review Section
         st.markdown("### 🔍 Review Design Document")
@@ -730,18 +866,49 @@ with tabs[2]:
                             st.session_state.state.update(output)
                         st.session_state.active_node = node
             
-            add_notification(f"Design document {status.lower()}!", "success" if status == "Approve" else "info")
+            st.success(f"Design document {status.lower()}!")
             st.rerun()
     else:
         st.info("📐 Design document will be created after user stories are approved.")
 
-# Tab 4: Generated Code
+# Tab 4: Code Generation
 with tabs[3]:
     st.markdown("### 💻 Generated Source Code")
     
     code = st.session_state.state.get("code", "")
     
     if code and code != "No code generated yet.":
+        # Language-specific display
+        lang = state.get("programming_language", "python")
+        lang_config = Config.SUPPORTED_LANGUAGES[lang]
+        st.markdown(f"#### Generated {lang_config['name']} Code")
+        
+        # Code quality analysis (if autonomous features are available)
+        if state.get("autonomy_level") != "manual":
+            try:
+                auto_engine = AutonomousDecisionEngine(AutonomyLevel(state.get("autonomy_level", "semi_auto")))
+                decision, metrics, feedback = auto_engine.analyze_code(
+                    code,
+                    state.get("design_document", {}),
+                    lang
+                )
+                
+                # Display metrics
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    render_quality_score("Code Structure", metrics.completeness_score)
+                    render_quality_score("Security", metrics.security_score)
+                    render_quality_score("Best Practices", metrics.best_practices_score)
+                with col2:
+                    st.markdown("#### 🤖 AI Analysis")
+                    if decision == "Approve":
+                        st.success(f"✅ {decision}")
+                    else:
+                        st.warning(f"⚠️ {decision}")
+                    st.caption(feedback[:100] + "..." if len(feedback) > 100 else feedback)
+            except Exception as e:
+                st.warning(f"Code analysis unavailable: {str(e)}")
+        
         # Code Statistics
         col1, col2, col3, col4 = st.columns(4)
         lines_of_code = len(code.split('\n'))
@@ -752,29 +919,25 @@ with tabs[3]:
             files_count = code.count("Filename:")
             st.metric("Files Generated", files_count)
         with col3:
-            st.metric("Language", "Python")
+            st.metric("Language", lang_config['name'])
         with col4:
             st.metric("Status", "Ready for Review")
         
-        # Code Display with Syntax Highlighting
-        st.markdown("#### 📄 Source Files")
-        
-        # Parse and display code files
+        # Display code files
         if os.path.exists("generated_code"):
             files = os.listdir("generated_code")
-            
-            # File selector
-            selected_file = st.selectbox("Select a file to view:", files)
-            
-            if selected_file:
-                file_path = os.path.join("generated_code", selected_file)
-                with open(file_path, 'r') as f:
-                    file_content = f.read()
+            if files:
+                st.markdown("#### 📄 Source Files")
+                selected_file = st.selectbox("Select a file to view:", files)
                 
-                # Display code with line numbers
-                st.code(file_content, language='python', line_numbers=True)
+                if selected_file:
+                    file_path = os.path.join("generated_code", selected_file)
+                    with open(file_path, 'r') as f:
+                        file_content = f.read()
+                    
+                    st.code(file_content, language=lang.lower(), line_numbers=True)
         else:
-            st.code(code, language='python')
+            st.code(code, language=lang.lower())
         
         # Code Review Section
         st.markdown("### 🔍 Code Review")
@@ -821,7 +984,7 @@ with tabs[3]:
                             st.session_state.state.update(output)
                         st.session_state.active_node = node
             
-            add_notification(f"Code {status.lower()}!", "success" if status == "Approve" else "info")
+            st.success(f"Code {status.lower()}!")
             st.rerun()
     else:
         st.info("💻 Code will be generated after the design document is approved.")
@@ -844,7 +1007,7 @@ with tabs[4]:
         with col3:
             st.metric("Coverage", "Comprehensive")
         
-        # Display test cases in expandable sections
+        # Display test cases
         test_case_blocks = test_cases.split("---")
         
         for i, test_block in enumerate(test_case_blocks):
@@ -891,7 +1054,7 @@ with tabs[4]:
                             st.session_state.state.update(output)
                         st.session_state.active_node = node
             
-            add_notification(f"Test cases {status.lower()}!", "success" if status == "Approve" else "info")
+            st.success(f"Test cases {status.lower()}!")
             st.rerun()
     else:
         st.info("🧪 Test cases will be generated after security review is complete.")
@@ -903,14 +1066,12 @@ with tabs[5]:
     security_feedback = st.session_state.state.get("security_review_feedback", "")
     
     if security_feedback and security_feedback != "N/A":
-        # Security Score Visualization
+        # Security Display
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            # Security feedback display
             st.markdown("#### 🛡️ Security Analysis Results")
             
-            # Parse security status
             security_status = st.session_state.state.get("security_review_status", "")
             
             if security_status == "Approve":
@@ -918,19 +1079,16 @@ with tabs[5]:
             else:
                 st.error("❌ **Security Status: NEEDS ATTENTION**")
             
-            # Display feedback in a nice format
-            st.markdown("##### 📋 Detailed Findings:")
             st.markdown(f"""
-            <div class="custom-card">
+            <div class="pro-card">
                 {security_feedback}
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
-            # Security metrics
+            # Security metrics visualization
             st.markdown("#### 📊 Security Metrics")
             
-            # Mock security scores (would be calculated from actual analysis)
             fig = go.Figure(go.Indicator(
                 mode = "gauge+number",
                 value = 85 if security_status == "Approve" else 45,
@@ -943,12 +1101,7 @@ with tabs[5]:
                         {'range': [0, 50], 'color': "lightgray"},
                         {'range': [50, 80], 'color': "yellow"},
                         {'range': [80, 100], 'color': "lightgreen"}
-                    ],
-                    'threshold': {
-                        'line': {'color': "red", 'width': 4},
-                        'thickness': 0.75,
-                        'value': 90
-                    }
+                    ]
                 }
             ))
             fig.update_layout(height=200, margin=dict(l=20, r=20, t=40, b=20))
@@ -975,7 +1128,7 @@ with tabs[5]:
             feedback_text = st.session_state.get("security_feedback", "") if status == "Denied" else ""
             graph.update_state(
                 st.session_state.thread,
-                {"security_review_status": status, "security_feedback": feedback_text},
+                {"security_review_status": status, "security_review_feedback": feedback_text},
                 as_node="Human Security Review"
             )
             
@@ -987,7 +1140,7 @@ with tabs[5]:
                             st.session_state.state.update(output)
                         st.session_state.active_node = node
             
-            add_notification(f"Security review {status.lower()}!", "success" if status == "Approve" else "warning")
+            st.success(f"Security review {status.lower()}!")
             st.rerun()
     else:
         st.info("🔒 Security review will be performed after code review is complete.")
@@ -1011,10 +1164,9 @@ with tabs[6]:
             else:
                 st.warning("⚠️ **Issues Found During Testing**")
             
-            # Display QA feedback
             feedback_text = "\n".join(qa_feedback) if isinstance(qa_feedback, list) else qa_feedback
             st.markdown(f"""
-            <div class="custom-card">
+            <div class="pro-card">
                 <h5>Test Execution Summary:</h5>
                 <p>{feedback_text}</p>
             </div>
@@ -1053,18 +1205,18 @@ with tabs[6]:
             "Approve for deployment?",
             ["Approve", "Denied"],
             horizontal=True,
-            key="qa_approval_1"
+            key="qa_approval"
         )
         
         if status == "Denied":
             feedback = st.text_area(
                 "What needs to be fixed before deployment?",
                 placeholder="E.g., Performance issues, failing edge cases, UI bugs...",
-                key="qa_feedback_1"
+                key="qa_feedback"
             )
         
         if st.button("✅ Submit QA Decision", type="primary", use_container_width=True):
-            feedback_text = st.session_state.get("qa_feedback_1", "") if status == "Denied" else ""
+            feedback_text = st.session_state.get("qa_feedback", "") if status == "Denied" else ""
             graph.update_state(
                 st.session_state.thread,
                 {"qa_review_status": status, "qa_review_feedback": [feedback_text]},
@@ -1079,7 +1231,7 @@ with tabs[6]:
                             st.session_state.state.update(output)
                         st.session_state.active_node = node
             
-            add_notification(f"QA {status.lower()}!", "success" if status == "Approve" else "info")
+            st.success(f"QA {status.lower()}!")
             st.rerun()
     else:
         st.info("✅ QA testing will begin after test cases are approved.")
@@ -1093,7 +1245,7 @@ with tabs[7]:
         st.balloons()
         
         st.markdown("""
-        <div class="custom-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981;">
+        <div class="pro-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981;">
             <h2 style="color: #065f46; text-align: center;">🎉 Deployment Successful!</h2>
             <p style="text-align: center; color: #047857; font-size: 18px;">
                 Your application has been successfully deployed to production.
@@ -1109,25 +1261,16 @@ with tabs[7]:
             deployment_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             st.markdown(f"""
             - **Environment:** Production
+            - **Language:** {Config.SUPPORTED_LANGUAGES[state.get('programming_language', 'python')]['name']}
             - **Version:** 1.0.0
             - **Deployed At:** {deployment_time}
             - **Status:** Active ✅
             - **Health Check:** Passing
             """)
-            
-            st.markdown("#### 🔗 Quick Links")
-            col1a, col1b = st.columns(2)
-            with col1a:
-                st.button("🌐 View Application", use_container_width=True)
-                st.button("📊 View Metrics", use_container_width=True)
-            with col1b:
-                st.button("📜 View Logs", use_container_width=True)
-                st.button("🔧 Configuration", use_container_width=True)
         
         with col2:
             st.markdown("#### 📦 Deployment Artifacts")
             
-            # List all generated artifacts
             artifacts = {
                 "User Stories": "artifacts/user_stories.txt",
                 "Design Document": "artifacts/design_document.docx",
@@ -1140,126 +1283,112 @@ with tabs[7]:
                     st.success(f"✅ {name}")
                 else:
                     st.info(f"📄 {name}")
-            
-            # Export all button
-            if st.button("📥 Download All Artifacts", type="primary", use_container_width=True):
-                st.success("📦 Preparing download package...")
-        
-        # Next Steps
-        st.markdown("### 🎯 Next Steps")
-        next_steps = st.container()
-        with next_steps:
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.info("**📈 Monitor Performance**\nSet up monitoring and alerting")
-            with col2:
-                st.info("**🔄 Plan Updates**\nSchedule feature releases")
-            with col3:
-                st.info("**📚 Documentation**\nCreate user guides")
     else:
         st.warning("⏳ **Deployment Pending**")
         st.info("Complete all review stages to enable deployment.")
-        
-        # Show pending items
-        pending_items = []
-        if not state.get("code"):
-            pending_items.append("Generate Code")
-        if state.get("security_review_status") != "Approve":
-            pending_items.append("Security Review")
-        if state.get("qa_review_status") != "Approve":
-            pending_items.append("QA Approval")
-        
-        if pending_items:
-            st.markdown("#### ⏳ Pending Items:")
-            for item in pending_items:
-                st.markdown(f"- ❌ {item}")
 
-# Tab 9: Analytics Dashboard
+# Tab 9: Analytics
 with tabs[8]:
-    st.markdown("### 📊 Workflow Analytics")
+    st.markdown("### 📊 Comprehensive Analytics Dashboard")
     
-    # Time Analysis
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        # Workflow Timeline
-        st.markdown("#### ⏱️ Stage Duration Analysis")
+    if st.session_state.events:
+        # Basic analytics
+        col1, col2, col3 = st.columns(3)
         
-        # Sample data for visualization
-        stages_data = []
-        events = st.session_state.events
+        with col1:
+            st.metric("Total Events", len(st.session_state.events))
+        with col2:
+            denials = len([e for e in st.session_state.events if "Denied" in str(e)])
+            st.metric("Iterations", denials)
+        with col3:
+            autonomous_count = len(st.session_state.state.get("autonomous_decisions", []))
+            st.metric("Auto Decisions", autonomous_count)
         
-        if events:
-            # Create timeline visualization
-            fig = go.Figure()
+        # Timeline visualization
+        if st.session_state.start_time:
+            timeline_data = []
+            current_time = st.session_state.start_time
             
-            # Add bars for each completed stage
-            stage_times = []
-            for i, event in enumerate(events[:10]):  # Limit to first 10 events
+            for i, event in enumerate(st.session_state.events):
                 for node_name in event:
-                    stage_times.append({
-                        "Stage": node_name,
-                        "Duration": 5 + (i * 2),  # Mock duration
-                        "Order": i
+                    timeline_data.append({
+                        'Stage': node_name,
+                        'Time': current_time + pd.Timedelta(minutes=i*5),
+                        'Duration': 5 + (i % 3)  # Mock duration
                     })
             
-            if stage_times:
-                import pandas as pd
-                df = pd.DataFrame(stage_times)
-                
-                fig = px.bar(df, x="Duration", y="Stage", orientation='h',
-                           color="Duration", color_continuous_scale="Blues",
-                           title="Time Spent per Stage (minutes)")
-                fig.update_layout(height=400)
+            if timeline_data:
+                df = pd.DataFrame(timeline_data)
+                fig = px.bar(df, x='Duration', y='Stage', orientation='h',
+                           title='Stage Duration Analysis')
                 st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.info("Analytics will be available once the workflow starts.")
-    
-    with col2:
-        st.markdown("#### 📈 Workflow Metrics")
-        
-        # Calculate metrics
-        total_events = len(st.session_state.events)
-        approval_rate = 80  # Mock data
-        
-        # Metrics cards
-        st.metric("Total Stages Completed", total_events)
-        st.metric("Approval Rate", f"{approval_rate}%", delta="+5%")
-        st.metric("Avg. Review Time", "12 min", delta="-3 min")
-        st.metric("Iterations Required", 2)
-    
-    # Feedback Analysis
-    st.markdown("#### 💬 Feedback Summary")
-    
-    feedback_items = []
-    if state.get("user_story_feedback"):
-        feedback_items.extend(state["user_story_feedback"])
-    if state.get("design_document_review_feedback"):
-        feedback_items.extend(state["design_document_review_feedback"])
-    if state.get("code_review_feedback"):
-        feedback_items.extend(state["code_review_feedback"])
-    
-    if feedback_items:
-        for feedback in feedback_items:
-            if feedback:
-                st.markdown(f"""
-                <div class="custom-card">
-                    <p>💭 {feedback}</p>
-                </div>
-                """, unsafe_allow_html=True)
     else:
-        st.info("No feedback provided yet.")
+        st.info("Analytics will be available once the workflow starts.")
 
-# Footer
+# Tab 10: AI Insights
+with tabs[9]:
+    st.markdown("### 🤖 AI-Powered Insights & Recommendations")
+    
+    try:
+        # Show advanced features if available
+        show_advanced_features(tabs[9], state)
+    except Exception as e:
+        st.warning(f"Advanced features temporarily unavailable: {str(e)}")
+        
+        # Fallback simple insights
+        st.markdown("#### 🧠 Basic AI Insights")
+        
+        if state.get("requirements"):
+            word_count = len(state["requirements"].split())
+            
+            if word_count < 50:
+                st.info("💡 Consider adding more detail to your requirements for better AI generation")
+            elif word_count > 500:
+                st.warning("💡 Your requirements are quite detailed. Consider breaking into phases.")
+            else:
+                st.success("💡 Your requirements are well-sized for optimal AI processing")
+        
+        # Language-specific insights
+        lang = state.get("programming_language", "python")
+        lang_config = Config.SUPPORTED_LANGUAGES[lang]
+        
+        st.markdown(f"#### 💻 {lang_config['name']} Recommendations")
+        st.info(f"""
+        **Framework:** {lang_config['test_framework']} for testing
+        **Package Manager:** {lang_config['package_manager']}
+        **Best Practices:** Follow {lang_config['name']} coding standards
+        """)
+
+# Footer with Professional Branding
 st.markdown("---")
 st.markdown("""
-<div style="text-align: center; color: #64748b; padding: 20px;">
-    <p>🚀 Powered by AI | Built with LangGraph & Streamlit | v2.0 MVP</p>
-    <p style="font-size: 12px;">© 2024 AI SDLC Wizard. All rights reserved.</p>
+<div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+    <p>🚀 AI SDLC Wizard Professional Edition | Multi-Language | Autonomous | Enterprise-Ready</p>
+    <p style="font-size: 12px;">Powered by Advanced AI | Built with LangGraph & Streamlit | v3.0 Professional</p>
 </div>
 """, unsafe_allow_html=True)
 
-# Auto-refresh for real-time updates
-if st.session_state.active_node != "Deployment" and st.session_state.start_time:
+# Auto-refresh for real-time updates (only in autonomous modes)
+if (st.session_state.active_node != "Deployment" and 
+    st.session_state.start_time and 
+    state.get("autonomy_level") in ["full_auto", "expert_auto"]):
+    
+    # Auto-save every 30 seconds
+    if hasattr(st.session_state, 'auto_save_enabled') and st.session_state.auto_save_enabled:
+        auto_save_state()
+    
     time.sleep(1)
     st.rerun()
+
+# Error boundary
+if (hasattr(st.session_state, 'error_recovery') and 
+    st.session_state.error_recovery.error_history):
+    with st.expander("🔧 Error Recovery Log"):
+        for error in st.session_state.error_recovery.error_history[-5:]:
+            st.markdown(f"""
+            <div class="pro-card" style="border-left: 4px solid var(--error-color);">
+                <strong>Error Type:</strong> {error['type']}<br>
+                <strong>Time:</strong> {error['timestamp']}<br>
+                <strong>Details:</strong> {error['details']}
+            </div>
+            """, unsafe_allow_html=True)

@@ -1,9 +1,9 @@
 📘 User Stories
 ========================================
 
-1. As a data engineer, I want to ingest data from different sources like APIs, files, and databases so that I can create a unified data pipeline.
-2. As a data analyst, I want to validate and cleanse incoming data to ensure its accuracy and reliability so that I can perform meaningful analysis.
-3. As a business user, I want to schedule batch processing jobs for specific datasets so that I can process large volumes of data efficiently.
-4. As a data scientist, I want to leverage real-time data processing capabilities to analyze trends and insights as they emerge so that I can make data-driven decisions.
-5. As a system administrator, I want to receive alerts when data quality issues are detected so that I can take immediate action to resolve them.
-6. As a developer, I want to track the lineage of data transformations so that I can understand the flow of data and identify potential bottlenecks.
+1. As an administrator, I want to create new organizations so that I can manage multiple client accounts efficiently.
+2. As a manager, I want to assign user roles and permissions to team members so that I can control access to data and features.
+3. As a user, I want to view real-time data visualizations in customizable dashboards so that I can quickly understand key performance indicators.
+4. As a user, I want to create custom dashboards with specific widgets and data points so that I can focus on the metrics most relevant to my role.
+5. As a user, I want to export data in various formats (CSV, Excel, PDF) so that I can share insights with stakeholders and integrate with other tools.
+6. As an administrator, I want to set up automated reports and alerts for critical data changes so that I can proactively address potential issues.
