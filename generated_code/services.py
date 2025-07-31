@@ -1,46 +1,27 @@
-from models import User, Profile
-from datetime import datetime
-import jwt
+from models import User, Booking
 
-def register_user(username, email, password):
-  """
-  Registers a new user in the system.
+class UserService:
+    """Provides business logic for user management."""
 
-  Args:
-      username (str): The user's desired username.
-      email (str): The user's email address.
-      password (str): The user's password.
+    def get_user_by_id(self, user_id):
+        """Retrieves a user by their ID."""
+        # Implement database query to fetch user
+        pass
 
-  Returns:
-      User: The newly created user object.
-  """
-  # Implement user registration logic here, including password hashing
-  # ...
+    def create_user(self, username, email):
+        """Creates a new user."""
+        # Implement database logic to insert new user
+        pass
 
-  return user
+class BookingService:
+    """Provides business logic for booking management."""
 
-def get_user_profile(user_id):
-  """
-  Retrieves a user's profile information.
+    def get_booking_by_id(self, booking_id):
+        """Retrieves a booking by its ID."""
+        # Implement database query to fetch booking
+        pass
 
-  Args:
-      user_id (int): The ID of the user.
-
-  Returns:
-      Profile: The user's profile object.
-  """
-  # Implement logic to fetch profile from database
-  # ...
-
-  return profile
-
-def upload_avatar(user_id, avatar_url):
-  """
-  Updates a user's profile avatar.
-
-  Args:
-      user_id (int): The ID of the user.
-      avatar_url (str): The URL of the new avatar image.
-  """
-  # Implement logic to update avatar in database
-  # ...
+    def create_booking(self, user_id, date, status):
+        """Creates a new booking."""
+        # Implement database logic to insert new booking
+        pass

@@ -1,0 +1,7 @@
+[Test Case Name]: Get User by ID - Invalid ID
+
+[Test Steps]:
+1. Call the get_user_by_id method in UserService with a non-existent ID
+2. Verify an exception is raised or an error message is returned indicating the user does not exist
+
+---

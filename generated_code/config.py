@@ -1,10 +1,3 @@
-import os
-
-# Database configuration
-DATABASE_URL = os.environ.get('DATABASE_URL')
-SQLALCHEMY_DATABASE_URI = DATABASE_URL 
-
-# JWT configuration
-JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
-
-# Other configurations as needed
+# Configuration settings for the API
+API_KEY_SECRET = 'your_api_key_secret'  # Replace with a secure secret
+DATABASE_URL = 'your_database_url'  # Replace with your database connection string

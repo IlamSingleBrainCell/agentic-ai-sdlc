@@ -1,0 +1,6 @@
+[Test Case Name]: Get User by ID - Valid ID
+
+[Test Steps]:
+1. Create a user in the database
+2. Call the get_user_by_id method in UserService with the user's ID
+3. Verify the retrieved user object matches the created user

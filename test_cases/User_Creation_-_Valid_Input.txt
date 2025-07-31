@@ -1,0 +1,6 @@
+[Test Case Name]: User Creation - Valid Input
+
+[Test Steps]:
+1. Create a new User object with valid data
+2. Call UserService.create_user with the User object
+3. Verify User object is successfully saved to database

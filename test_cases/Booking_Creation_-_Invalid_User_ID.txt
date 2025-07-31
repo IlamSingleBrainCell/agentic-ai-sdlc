@@ -1,0 +1,8 @@
+[Test Case Name]: Booking Creation - Invalid User ID
+
+[Test Steps]:
+1. Create a new Booking object with an invalid user ID
+2. Call BookingService.create_booking with the Booking object
+3. Verify an error is raised indicating invalid user ID
+
+---

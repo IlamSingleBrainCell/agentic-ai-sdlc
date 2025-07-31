@@ -1,0 +1,6 @@
+[Test Case Name]: Health Check - Successful
+
+[Test Steps]:
+1. Send GET request to /health
+2. Verify response status code is 200
+3. Verify response body contains 'status': 'healthy'

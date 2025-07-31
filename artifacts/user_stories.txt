@@ -1,9 +1,9 @@
 📘 User Stories
 ========================================
 
-1. As an end user, I want to register for the app using my social media account so that I can quickly get started.
-2. As an end user, I want to securely authenticate with the app using a JWT token so that my data is protected.
-3. As an end user, I want to upload and manage my profile avatar so that I can personalize my experience.
-4. As an end user, I want to receive push notifications about important events and updates so that I stay informed.
-5. As a user, I want to chat with other users in real-time so that I can connect and collaborate effectively.
-6. As a user, I want to synchronize my data offline so that I can access it even without an internet connection.
+1. As a developer, I want to interact with the API using RESTful endpoints so that I can easily integrate it with my applications.
+2. As a user, I want to authenticate with the API using API keys or OAuth2 so that I can access protected functionality.
+3. As an administrator, I want to perform CRUD operations on core entities through the API so that I can manage data effectively.
+4. As a user, I want to filter, sort, and paginate API responses so that I can efficiently retrieve the specific data I need.
+5. As a user, I want to receive real-time notifications through webhooks when specific events occur so that I can stay informed and react promptly.
+6. As a developer, I want to ensure the API is robust and reliable by utilizing API versioning, health checks, and monitoring endpoints so that my applications can function consistently.

@@ -1,12 +1,14 @@
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
-    # ... other user attributes
+class User:
+    """Represents a user in the system."""
+    def __init__(self, user_id, username, email):
+        self.user_id = user_id
+        self.username = username
+        self.email = email
 
-class Profile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    avatar_url = db.Column(db.String(255))
-    # ... other profile attributes
+class Booking:
+    """Represents a booking in the system."""
+    def __init__(self, booking_id, user_id, date, status):
+        self.booking_id = booking_id
+        self.user_id = user_id
+        self.date = date
+        self.status = status

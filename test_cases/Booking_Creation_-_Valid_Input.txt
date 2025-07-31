@@ -1,0 +1,6 @@
+[Test Case Name]: Booking Creation - Valid Input
+
+[Test Steps]:
+1. Create a new Booking object with valid data
+2. Call BookingService.create_booking with the Booking object
+3. Verify Booking object is successfully saved to database

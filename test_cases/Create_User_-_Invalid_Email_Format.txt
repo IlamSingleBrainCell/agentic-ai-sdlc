@@ -1,0 +1,6 @@
+[Test Case Name]: Create User - Invalid Email Format
+
+[Test Steps]:
+1. Create a new User object with an invalid email format
+2. Call the create_user method in UserService with the User object
+3. Verify an exception is raised or an error message is returned indicating invalid email format
