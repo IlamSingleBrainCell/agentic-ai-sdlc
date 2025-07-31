@@ -1,0 +1,10 @@
+[Test Case Name]: Get User Profile - valid user
+
+[Test Steps]:
+1.  Register a user
+2.  Obtain access_token
+3.  Send GET request to /profile with access_token in the header
+4.  Verify response status code is 200 OK
+
+[Expected Result]:
+User profile information returned in JSON format

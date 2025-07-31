@@ -1,0 +1,8 @@
+[Test Case Name]: Get User Profile - invalid token
+
+[Test Steps]:
+1. Send GET request to /profile
+2. Verify response status code is 401 Unauthorized
+
+[Expected Result]:
+Authentication failure message

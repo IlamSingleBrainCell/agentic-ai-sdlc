@@ -1,0 +1,9 @@
+[Test Case Name]: User registration - duplicate username
+
+[Test Steps]:
+1. Register a user with a specific username
+2. Attempt to register another user with the same username
+3. Verify response status code is 400 Bad Request
+
+[Expected Result]:
+Error message indicating username already exists

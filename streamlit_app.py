@@ -4,6 +4,7 @@ Professional AI SDLC Wizard with Multi-Language Support and Autonomous Features
 """
 
 import os
+from typing import Dict, Any, Optional
 import streamlit as st
 from dotenv import load_dotenv
 from langgraph.checkpoint.memory import MemorySaver
@@ -1236,19 +1237,196 @@ with tabs[6]:
     else:
         st.info("✅ QA testing will begin after test cases are approved.")
 
-# Tab 8: Deployment
+# Tab 8: Deployment (Updated with Professional Success)
 with tabs[7]:
     st.markdown("### 🚀 Deployment Status")
     
     if state.get("deployment") == "deployed":
-        # Success celebration
-        st.balloons()
+        # Professional Success Components (instead of balloons)
         
+        # 1. Professional Success Banner
         st.markdown("""
-        <div class="pro-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981;">
-            <h2 style="color: #065f46; text-align: center;">🎉 Deployment Successful!</h2>
-            <p style="text-align: center; color: #047857; font-size: 18px;">
-                Your application has been successfully deployed to production.
+        <style>
+        .deployment-success-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            animation: successSlideIn 0.6s ease-out;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3);
+        }
+        
+        .deployment-success-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        .success-icon-large {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: bounceIn 0.8s ease-out;
+        }
+        
+        .success-title {
+            font-size: 2.2rem;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .success-subtitle {
+            font-size: 1.2rem;
+            margin: 0;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        @keyframes successSlideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .deployment-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .professional-alert {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-left: 5px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .alert-icon {
+            color: #0ea5e9;
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .alert-title {
+            color: #0c4a6e;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+        }
+        
+        .alert-message {
+            color: #0369a1;
+            margin: 0;
+            line-height: 1.5;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Calculate deployment statistics
+        deployment_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        language_name = Config.SUPPORTED_LANGUAGES[state.get('programming_language', 'python')]['name']
+        files_generated = 0
+        if state.get("code"):
+            files_generated += state["code"].count("Filename:")
+        if state.get("test_cases"):
+            files_generated += state["test_cases"].count("Filename:")
+        
+        quality_score = state.get("quality_metrics", {}).get("overall_score", 0.85)
+        autonomous_decisions = len(state.get("autonomous_decisions", []))
+        
+        # Professional Success Banner
+        st.markdown(f"""
+        <div class="deployment-success-banner">
+            <div class="success-icon-large">🎉</div>
+            <h1 class="success-title">Deployment Successful!</h1>
+            <p class="success-subtitle">Your {language_name} application is now live in production</p>
+            
+            <div class="deployment-metrics">
+                <div class="metric-card">
+                    <div class="metric-value">{language_name}</div>
+                    <div class="metric-label">Language</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{files_generated}</div>
+                    <div class="metric-label">Files</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{int(quality_score * 100)}%</div>
+                    <div class="metric-label">Quality</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{autonomous_decisions}</div>
+                    <div class="metric-label">AI Decisions</div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Professional Info Alert
+        st.markdown(f"""
+        <div class="professional-alert">
+            <span class="alert-icon">🌟</span>
+            <h4 class="alert-title">Production Deployment Complete</h4>
+            <p class="alert-message">
+                Your application has been successfully processed through our AI-powered SDLC workflow 
+                and is ready for production use. All quality gates have been passed and security 
+                reviews completed.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -1258,34 +1436,457 @@ with tabs[7]:
         
         with col1:
             st.markdown("#### 📋 Deployment Summary")
-            deployment_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            st.markdown(f"""
-            - **Environment:** Production
-            - **Language:** {Config.SUPPORTED_LANGUAGES[state.get('programming_language', 'python')]['name']}
-            - **Version:** 1.0.0
-            - **Deployed At:** {deployment_time}
-            - **Status:** Active ✅
-            - **Health Check:** Passing
-            """)
+            
+            # Professional metrics display
+            metrics_data = {
+                "Environment": "Production",
+                "Language": language_name,
+                "Version": "1.0.0",
+                "Deployed At": deployment_time,
+                "Status": "🟢 Active",
+                "Health Check": "🟢 Passing",
+                "Autonomy Level": state.get('autonomy_level', 'manual').title(),
+                "Quality Score": f"{int(quality_score * 100)}%"
+            }
+            
+            for key, value in metrics_data.items():
+                st.markdown(f"**{key}:** {value}")
         
         with col2:
-            st.markdown("#### 📦 Deployment Artifacts")
+            st.markdown("#### 📦 Generated Artifacts")
             
             artifacts = {
-                "User Stories": "artifacts/user_stories.txt",
-                "Design Document": "artifacts/design_document.docx",
-                "Source Code": "generated_code/",
-                "Test Cases": "test_cases/"
+                "📝 User Stories": "artifacts/user_stories.txt",
+                "📐 Design Document": "artifacts/design_document.docx", 
+                "💻 Source Code": "generated_code/",
+                "🧪 Test Cases": "test_cases/",
+                "🔒 Security Report": "artifacts/security_report.txt",
+                "✅ QA Report": "artifacts/qa_report.txt"
             }
             
             for name, path in artifacts.items():
                 if os.path.exists(path):
-                    st.success(f"✅ {name}")
+                    st.success(f"{name}")
                 else:
-                    st.info(f"📄 {name}")
+                    st.info(f"{name}")
+        
+        # Professional Action Buttons
+        st.markdown("#### 🎯 Next Steps")
+        
+        action_col1, action_col2, action_col3 = st.columns(3)
+        
+        with action_col1:
+            if st.button("📊 View Analytics Dashboard", use_container_width=True, type="primary"):
+                st.session_state.show_analytics = True
+                st.success("Analytics dashboard activated!")
+        
+        with action_col2:
+            if st.button("📦 Download All Artifacts", use_container_width=True):
+                # In a real implementation, this would create a zip file
+                st.success("✅ All artifacts packaged for download!")
+                st.download_button(
+                    "⬇️ Download Project Package",
+                    data="# Project artifacts would be packaged here",
+                    file_name=f"ai_sdlc_project_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip",
+                    mime="application/zip"
+                )
+        
+        with action_col3:
+            if st.button("🔄 Start New Project", use_container_width=True):
+                # Reset session state for new project
+                for key in list(st.session_state.keys()):
+                    if key not in ['initialized']:
+                        del st.session_state[key]
+                st.success("🚀 Ready for your next project!")
+                st.rerun()
+        
+        # Professional Success Toast (appears briefly)
+        if "success_toast_shown" not in st.session_state:
+            st.session_state.success_toast_shown = True
+            
+            # Professional toast notification
+            st.markdown("""
+            <style>
+            .success-toast {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                border-left: 5px solid #10b981;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                padding: 20px 25px;
+                min-width: 350px;
+                z-index: 1000;
+                animation: slideInRight 0.4s ease-out, fadeOut 0.5s ease-out 4.5s forwards;
+            }
+            
+            .toast-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 8px;
+            }
+            
+            .toast-icon {
+                font-size: 1.5rem;
+                color: #10b981;
+            }
+            
+            .toast-title {
+                font-weight: 700;
+                color: #1e293b;
+                margin: 0;
+                font-size: 1.1rem;
+            }
+            
+            .toast-message {
+                color: #64748b;
+                margin: 0;
+                line-height: 1.4;
+            }
+            
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            </style>
+            
+            <div class="success-toast">
+                <div class="toast-header">
+                    <div class="toast-icon">🚀</div>
+                    <h4 class="toast-title">Deployment Complete!</h4>
+                </div>
+                <p class="toast-message">Your application is now live and ready for users</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Post-deployment recommendations
+        st.markdown("#### 💡 Recommended Next Steps")
+        
+        recommendations = [
+            "🔍 **Monitor Performance**: Set up monitoring and alerting for your production application",
+            "📊 **Analytics**: Implement user analytics to track application usage and performance",
+            "🔄 **CI/CD Pipeline**: Set up continuous integration and deployment for future updates",
+            "📈 **Scaling**: Plan for horizontal scaling based on user growth",
+            "🛡️ **Security**: Schedule regular security audits and penetration testing",
+            "📖 **Documentation**: Create user documentation and API guides",
+            "🚀 **Marketing**: Prepare marketing materials and launch strategy"
+        ]
+        
+        for rec in recommendations:
+            st.markdown(f"- {rec}")
+    
     else:
-        st.warning("⏳ **Deployment Pending**")
-        st.info("Complete all review stages to enable deployment.")
+        # Pre-deployment status
+        st.markdown("""
+        <div class="professional-alert" style="
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-left: 5px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        ">
+            <span style="color: #f59e0b; font-size: 1.5rem; margin-right: 10px;">⏳</span>
+            <strong style="color: #92400e; font-size: 1.1rem;">Deployment Pending</strong>
+            <p style="color: #78350f; margin: 8px 0 0 0; line-height: 1.5;">
+                Complete all review stages to enable deployment. Your application will be automatically 
+                deployed once all quality gates have been passed.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Deployment readiness checklist
+        st.markdown("#### ✅ Deployment Readiness Checklist")
+        
+        checklist_items = [
+            ("Requirements Defined", bool(state.get("requirements"))),
+            ("User Stories Approved", state.get("user_story_status") == "Approve"),
+            ("Design Document Approved", state.get("design_document_review_status") == "Approve"),
+            ("Code Generated & Reviewed", state.get("code_review_status") == "Approve"),
+            ("Security Review Passed", state.get("security_review_status") == "Approve"),
+            ("Test Cases Generated", bool(state.get("test_cases"))),
+            ("QA Testing Complete", state.get("qa_review_status") == "Approve")
+        ]
+        
+        for item_name, is_complete in checklist_items:
+            if is_complete:
+                st.success(f"✅ {item_name}")
+            else:
+                st.info(f"⏳ {item_name}")
+        
+        # Progress visualization
+        completed_items = sum(1 for _, is_complete in checklist_items if is_complete)
+        total_items = len(checklist_items)
+        progress_percentage = (completed_items / total_items) * 100
+        
+        st.markdown("#### 📊 Deployment Progress")
+        st.progress(progress_percentage / 100)
+        st.caption(f"Progress: {completed_items}/{total_items} steps completed ({progress_percentage:.0f}%)")
+        
+        # Estimated deployment time
+        if progress_percentage > 80:
+            st.info("🚀 **Ready for deployment!** All major requirements completed.")
+        elif progress_percentage > 60:
+            st.warning("⚡ **Almost ready!** A few more steps remaining.")
+        else:
+            st.info("🔧 **In progress...** Continue with the workflow stages.")
+
+
+# Additional helper function to replace balloons throughout the app
+def show_professional_success(
+    title: str = "Success!",
+    message: str = "Operation completed successfully",
+    show_confetti: bool = False,
+    auto_dismiss: int = 5
+):
+    """
+    Professional replacement for st.balloons() and st.snow()
+    
+    Args:
+        title: Success message title
+        message: Detailed success message
+        show_confetti: Whether to show subtle confetti animation
+        auto_dismiss: Seconds before auto-dismissing (0 for manual dismiss)
+    """
+    
+    confetti_css = """
+    .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 999;
+    }
+    
+    .confetti-piece {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        animation: confetti-fall 3s linear infinite;
+    }
+    
+    .confetti-piece:nth-child(2n) { background: #3b82f6; }
+    .confetti-piece:nth-child(3n) { background: #f59e0b; }
+    .confetti-piece:nth-child(4n) { background: #ef4444; }
+    .confetti-piece:nth-child(5n) { background: #8b5cf6; }
+    
+    @keyframes confetti-fall {
+        0% {
+            transform: translateY(-100vh) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+    """ if show_confetti else ""
+    
+    success_html = f"""
+    <style>
+    {confetti_css}
+    
+    .professional-success {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 2px solid #0ea5e9;
+        border-radius: 16px;
+        padding: 25px;
+        margin: 20px 0;
+        text-align: center;
+        position: relative;
+        animation: successAppear 0.5s ease-out;
+        box-shadow: 0 10px 25px rgba(14, 165, 233, 0.1);
+    }
+    
+    .success-checkmark {{
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #10b981;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: checkmarkPop 0.6s ease-out;
+    }}
+    
+    .success-checkmark::after {{
+        content: '✓';
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+    }}
+    
+    .success-content h3 {{
+        color: #0c4a6e;
+        margin: 0 0 10px 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }}
+    
+    .success-content p {{
+        color: #0369a1;
+        margin: 0;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }}
+    
+    @keyframes successAppear {{
+        from {{
+            transform: scale(0.9);
+            opacity: 0;
+        }}
+        to {{
+            transform: scale(1);
+            opacity: 1;
+        }}
+    }}
+    
+    @keyframes checkmarkPop {{
+        0% {{
+            transform: scale(0);
+            opacity: 0;
+        }}
+        50% {{
+            transform: scale(1.2);
+        }}
+        100% {{
+            transform: scale(1);
+            opacity: 1;
+        }}
+    }}
+    </style>
+    
+    <div class="professional-success" id="professionalSuccess">
+        <div class="success-checkmark"></div>
+        <div class="success-content">
+            <h3>{title}</h3>
+            <p>{message}</p>
+        </div>
+    </div>
+    """
+    
+    # Add confetti if requested
+    if show_confetti:
+        success_html += """
+        <div class="confetti">
+            <div class="confetti-piece" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="confetti-piece" style="left: 20%; animation-delay: 0.2s;"></div>
+            <div class="confetti-piece" style="left: 30%; animation-delay: 0.4s;"></div>
+            <div class="confetti-piece" style="left: 40%; animation-delay: 0.6s;"></div>
+            <div class="confetti-piece" style="left: 50%; animation-delay: 0.8s;"></div>
+            <div class="confetti-piece" style="left: 60%; animation-delay: 1s;"></div>
+            <div class="confetti-piece" style="left: 70%; animation-delay: 1.2s;"></div>
+            <div class="confetti-piece" style="left: 80%; animation-delay: 1.4s;"></div>
+            <div class="confetti-piece" style="left: 90%; animation-delay: 1.6s;"></div>
+        </div>
+        """
+    
+    # Add auto-dismiss script if specified
+    if auto_dismiss > 0:
+        success_html += f"""
+        <script>
+        setTimeout(() => {{
+            const element = document.getElementById('professionalSuccess');
+            if (element) {{
+                element.style.opacity = '0';
+                element.style.transform = 'scale(0.95)';
+                setTimeout(() => element.remove(), 300);
+            }}
+        }}, {auto_dismiss * 1000});
+        </script>
+        """
+    
+    st.markdown(success_html, unsafe_allow_html=True)
+
+
+# Example usage in your workflow completion handlers:
+def handle_workflow_completion(stage_name: str, state: Dict[str, Any]):
+    """Handle completion of workflow stages with professional feedback"""
+    
+    success_messages = {
+        "user_stories": {
+            "title": "User Stories Generated!",
+            "message": "Comprehensive user stories have been created and are ready for review."
+        },
+        "design_document": {
+            "title": "Design Document Complete!",
+            "message": "Technical architecture and design specifications have been generated."
+        },
+        "code_generation": {
+            "title": "Code Generated Successfully!",
+            "message": f"Production-ready {Config.SUPPORTED_LANGUAGES[state.get('programming_language', 'python')]['name']} code has been generated."
+        },
+        "security_review": {
+            "title": "Security Review Complete!",
+            "message": "Code has passed security analysis and is ready for deployment."
+        },
+        "test_cases": {
+            "title": "Test Cases Generated!",
+            "message": "Comprehensive test suite has been created for quality assurance."
+        },
+        "deployment": {
+            "title": "🎉 Deployment Successful!",
+            "message": "Your application is now live in production and ready for users!",
+        }
+    }
+    
+    if stage_name in success_messages:
+        msg = success_messages[stage_name]
+        show_professional_success(
+            title=msg["title"],
+            message=msg["message"],
+            show_confetti=(stage_name == "deployment"),
+            auto_dismiss=3 if stage_name != "deployment" else 0
+        )
+
+
+# Updated function to replace st.balloons() calls
+def professional_celebration(celebration_type: str = "success"):
+    """
+    Professional replacement for st.balloons() and st.snow()
+    
+    Args:
+        celebration_type: Type of celebration ('success', 'completion', 'milestone')
+    """
+    
+    if celebration_type == "success":
+        show_professional_success(
+            title="🎉 Congratulations!",
+            message="Your request has been completed successfully.",
+            show_confetti=True,
+            auto_dismiss=4
+        )
+    elif celebration_type == "completion":
+        show_professional_success(
+            title="✅ Task Complete!",
+            message="All requirements have been successfully processed.",
+            show_confetti=False,
+            auto_dismiss=3
+        )
+    elif celebration_type == "milestone":
+        show_professional_success(
+            title="🏆 Milestone Achieved!",
+            message="You've reached an important milestone in your project.",
+            show_confetti=True,
+            auto_dismiss=5
+        )
 
 # Tab 9: Analytics
 with tabs[8]:

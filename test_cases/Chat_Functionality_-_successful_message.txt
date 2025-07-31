@@ -1,0 +1,10 @@
+[Test Case Name]: Chat Functionality - successful message
+
+[Test Steps]:
+1. Register two users
+2. Obtain access tokens for both users
+3. Send a POST request to /chat with a message from one user, including the access token in the header
+4. Verify the other user receives the message
+
+[Expected Result]:
+Successful message delivery

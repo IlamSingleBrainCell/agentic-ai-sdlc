@@ -1,0 +1,8 @@
+[Test Case Name]: User registration - invalid email format
+
+[Test Steps]:
+1. Send POST request to /register with an invalid email address (e.g., "test")
+2. Verify response status code is 400 Bad Request
+
+[Expected Result]:
+Error message specifying invalid email format

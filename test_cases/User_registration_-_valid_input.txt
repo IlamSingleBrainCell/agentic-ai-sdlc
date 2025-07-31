@@ -1,0 +1,9 @@
+[Test Case Name]: User registration - valid input
+
+[Test Steps]:
+1. Send POST request to /register with valid username, email, and password
+2. Verify response status code is 200 OK
+3. Extract access_token from response JSON
+
+[Expected Result]:
+Successfully registered user with access_token

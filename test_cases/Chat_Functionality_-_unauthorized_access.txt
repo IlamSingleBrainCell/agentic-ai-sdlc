@@ -1,0 +1,8 @@
+[Test Case Name]: Chat Functionality - unauthorized access
+
+[Test Steps]:
+1. Send a POST request to /chat without an access token
+2. Observe the API response
+
+[Expected Result]:
+401 Unauthorized error response

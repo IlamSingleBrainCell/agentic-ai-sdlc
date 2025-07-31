@@ -1,25 +1,12 @@
-class Product:
-    """Represents a product in the catalog."""
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    # ... other user attributes
 
-    def __init__(self, id, name, description, price, inventory):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.price = price
-        self.inventory = inventory
-
-
-class User:
-    """Represents a registered user."""
-    def __init__(self, id, username, email, password):
-        self.id = id
-        self.username = username
-        self.email = email
-        self.password = password
-
-    
-class Order:
-    """Represents an order placed by a user."""
-    def __init__(self, user_id, order_items):
-        self.user_id = user_id
-        self.order_items = order_items
+class Profile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    avatar_url = db.Column(db.String(255))
+    # ... other profile attributes

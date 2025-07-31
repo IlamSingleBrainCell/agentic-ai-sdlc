@@ -1,40 +1,46 @@
-from models import Product, User, Order
-from repositories import ProductRepository, UserRepository, OrderRepository
+from models import User, Profile
+from datetime import datetime
+import jwt
 
-class ProductService:
-    def __init__(self):
-        self.product_repository = ProductRepository()
+def register_user(username, email, password):
+  """
+  Registers a new user in the system.
 
-    def get_all_products(self):
-        return self.product_repository.get_all()
+  Args:
+      username (str): The user's desired username.
+      email (str): The user's email address.
+      password (str): The user's password.
 
-class UserService:
-    def __init__(self):
-        self.user_repository = UserRepository()
+  Returns:
+      User: The newly created user object.
+  """
+  # Implement user registration logic here, including password hashing
+  # ...
 
-    def create_user(self, user_data):
-        user = User(
-            id=None,  # ID will be generated automatically
-            username=user_data['username'],
-            email=user_data['email'],
-            password=user_data['password']
-        )
-        return self.user_repository.create(user)
+  return user
 
-    def login_user(self, user_data):
-        # Implement user authentication logic here
-        # ...
-        return "token" # Replace with actual token generation
+def get_user_profile(user_id):
+  """
+  Retrieves a user's profile information.
 
-    def add_to_cart(self, user_id, product_id):
-        # Implement cart management logic here
-        # ...
-        pass  
+  Args:
+      user_id (int): The ID of the user.
 
-class OrderService:
-    def __init__(self):
-        self.order_repository = OrderRepository()
+  Returns:
+      Profile: The user's profile object.
+  """
+  # Implement logic to fetch profile from database
+  # ...
 
-    def create_order(self, user_id, order_items):
-        order = Order(user_id=user_id, order_items=order_items)
-        return self.order_repository.create(order)
+  return profile
+
+def upload_avatar(user_id, avatar_url):
+  """
+  Updates a user's profile avatar.
+
+  Args:
+      user_id (int): The ID of the user.
+      avatar_url (str): The URL of the new avatar image.
+  """
+  # Implement logic to update avatar in database
+  # ...
