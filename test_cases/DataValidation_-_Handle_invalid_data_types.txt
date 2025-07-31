@@ -1,0 +1,8 @@
+[Test Case Name]: DataValidation - Handle invalid data types
+
+[Test Type]: Negative
+
+[Test Steps]:
+1. Create a list of dictionaries with data of an invalid type (e.g., a list where a string is expected).
+2. Call the `validate_data()` function with the list of dictionaries.
+3. Assert that an exception is raised indicating the invalid data type.

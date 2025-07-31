@@ -1,0 +1,10 @@
+[Test Case Name]: DataPipeline - Ingest data from APIs
+
+[Test Type]: Positive
+
+[Test Steps]:
+1. Create an ApiDataSource instance with a valid API URL.
+2. Instantiate a DataPipeline with the ApiDataSource as one of the sources.
+3. Call the `run()` method on the DataPipeline instance.
+4. Assert that the `get_data()` method of the ApiDataSource is called.
+5. Assert that the retrieved data from the API is processed correctly.

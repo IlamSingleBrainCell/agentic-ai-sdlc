@@ -1,0 +1,9 @@
+[Test Case Name]: DataLineage - Track data transformations
+
+[Test Type]: Positive
+
+[Test Steps]:
+1. Create two `DataTransformation` objects, each representing a different transformation step.
+2. Append these transformations to the `lineage_record`.
+3. Simulate data flowing through these transformations.
+4. Verify that the `lineage_record` accurately reflects the sequence of transformations applied to the data.

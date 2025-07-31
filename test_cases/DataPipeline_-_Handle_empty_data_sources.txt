@@ -1,0 +1,8 @@
+[Test Case Name]: DataPipeline - Handle empty data sources
+
+[Test Type]: Edge Case
+
+[Test Steps]:
+1. Create a DataPipeline with an empty list of data sources.
+2. Call the `run()` method on the DataPipeline instance.
+3. Assert that no data is processed.

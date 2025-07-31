@@ -1,0 +1,6 @@
+[Test Case Name]: Get all products - edge case
+
+[Test Steps]:
+1. Send GET request to /products with query parameter "limit=10"
+2. Receive response
+3. Assert response contains 10 products

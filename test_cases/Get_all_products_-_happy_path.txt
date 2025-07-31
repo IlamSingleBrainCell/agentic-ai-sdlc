@@ -1,0 +1,7 @@
+---
+[Test Case Name]: Get all products - happy path
+
+[Test Steps]:
+1. Send GET request to /products
+2. Receive response
+3. Assert response status code is 200

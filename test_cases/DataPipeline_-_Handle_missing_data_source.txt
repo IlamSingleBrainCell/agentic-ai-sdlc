@@ -1,0 +1,8 @@
+[Test Case Name]: DataPipeline - Handle missing data source
+
+[Test Type]: Negative
+
+[Test Steps]:
+1. Create a DataPipeline with a list of data sources, one of which is missing (e.g., not instantiated).
+2. Call the `run()` method on the DataPipeline instance.
+3. Assert that an exception is raised indicating the missing data source.

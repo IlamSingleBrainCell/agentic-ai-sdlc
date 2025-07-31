@@ -1,0 +1,10 @@
+[Test Case Name]: DataPipeline - Ingest data from files
+
+[Test Type]: Positive
+
+[Test Steps]:
+1. Create a FileDataSource instance with a valid file path.
+2. Instantiate a DataPipeline with the FileDataSource as one of the sources.
+3. Call the `run()` method on the DataPipeline instance.
+4. Assert that the `get_data()` method of the FileDataSource is called.
+5. Assert that the retrieved data from the file is processed correctly.

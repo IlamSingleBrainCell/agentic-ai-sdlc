@@ -1,0 +1,8 @@
+[Test Case Name]: DataValidation - Validate empty fields
+
+[Test Type]: Positive
+
+[Test Steps]:
+1. Create a list of dictionaries with some empty fields.
+2. Call the `validate_data()` function with the list of dictionaries.
+3. Assert that the validated dataset contains only dictionaries with all fields filled.

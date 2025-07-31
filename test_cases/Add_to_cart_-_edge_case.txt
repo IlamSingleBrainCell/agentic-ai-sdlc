@@ -1,0 +1,8 @@
+[Test Case Name]: Add to cart - edge case
+
+[Test Steps]:
+1. Send POST request to /cart
+2. Include a non-existent user ID
+3. Receive response
+4. Assert response status code is 404
+5. Assert response includes an error message indicating user not found

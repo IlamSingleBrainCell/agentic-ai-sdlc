@@ -1,0 +1,8 @@
+[Test Case Name]: Register user - edge case
+
+[Test Steps]:
+1. Send POST request to /users/register
+2. Include user data with an existing username
+3. Receive response
+4. Assert response status code is 400 
+5. Assert response includes an error message indicating username conflict
